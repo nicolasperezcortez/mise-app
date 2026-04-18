@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mise App</title>
+  <meta name="description" content="Mise App - gestión operativa de barra para bartenders y bares." />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=boska@400,500,700&display=swap" rel="stylesheet" />
+  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+      --radius-sm: .375rem; --radius-md: .75rem; --radius-lg: 1rem; --radius-xl: 1.25rem; --radius-full: 9999px;
+      --color-bg: #f6f4ef; --color-surface:#fbfaf7; --color-surface-2:#f1eee7; --color-surface-offset:#e7e1d8; --color-border:#d4cdbf;
+      --color-text:#231f1a; --color-text-muted:#6f675d; --color-text-faint:#a29a8d; --color-text-inverse:#faf7f1;
+      --color-primary:#9b7b2b; --color-primary-hover:#7d621d; --color-primary-highlight:#ebe0bf; --color-success:#437a22; --color-error:#a13544;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06); --shadow-md: 0 10px 30px rgba(0,0,0,.09);
+      --font-display:'Boska', Georgia, serif; --font-body:'Satoshi', Inter, sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg:#0f0f10; --color-surface:#171719; --color-surface-2:#1d1d20; --color-surface-offset:#26262b; --color-border:#323239;
+      --color-text:#f0ede6; --color-text-muted:#b4ab9f; --color-text-faint:#7f776d; --color-text-inverse:#121212;
+      --color-primary:#d1a84c; --color-primary-hover:#e3ba5b; --color-primary-highlight:#362b18; --color-success:#70b84b; --color-error:#df6f80;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.28); --shadow-md: 0 18px 42px rgba(0,0,0,.35);
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body {
+      min-height:100dvh; background: radial-gradient(circle at top, rgba(209,168,76,.1), transparent 30%), var(--color-bg);
+      color:var(--color-text); font:400 var(--text-base)/1.6 var(--font-body);
+    }
+    img, svg { display:block; max-width:100%; }
+    button, input, select, textarea { font:inherit; color:inherit; }
+    button { cursor:pointer; border:none; background:none; }
+    a { color:inherit; text-decoration:none; }
+    :focus-visible { outline:2px solid var(--color-primary); outline-offset:3px; border-radius:var(--radius-sm); }
+    .app-shell { max-width: 460px; margin: 0 auto; min-height:100dvh; position:relative; padding-bottom:5.5rem; }
+    .topbar {
+      position:sticky; top:0; z-index:20; backdrop-filter: blur(16px); background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+      border-bottom:1px solid rgba(255,255,255,.06); padding:var(--space-4);
+    }
+    .brand-row { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); }
+    .brand { display:flex; align-items:center; gap:var(--space-3); }
+    .logo { width:42px; height:42px; padding:.5rem; border-radius:14px; background:linear-gradient(180deg, rgba(209,168,76,.18), rgba(209,168,76,.06)); border:1px solid rgba(209,168,76,.24); color:var(--color-primary); box-shadow:var(--shadow-sm); }
+    .brand h1 { font:700 var(--text-lg)/1 var(--font-display); letter-spacing:.02em; }
+    .brand p { font-size:var(--text-xs); color:var(--color-text-muted); margin-top:.2rem; }
+    .icon-btn { width:44px; height:44px; display:grid; place-items:center; border-radius:14px; background:var(--color-surface); border:1px solid rgba(255,255,255,.08); }
+    .hero { padding:var(--space-5) var(--space-4) var(--space-4); display:grid; gap:var(--space-4); }
+    .hero-card {
+      background:linear-gradient(180deg, color-mix(in srgb, var(--color-primary) 14%, var(--color-surface)) 0%, var(--color-surface) 100%);
+      border:1px solid rgba(209,168,76,.18); border-radius:24px; padding:var(--space-5); box-shadow:var(--shadow-md);
+    }
+    .eyebrow { display:inline-flex; align-items:center; gap:.4rem; font-size:var(--text-xs); color:var(--color-primary); letter-spacing:.08em; text-transform:uppercase; margin-bottom:var(--space-3); }
+    .hero-card h2 { font:700 var(--text-xl)/1.05 var(--font-display); margin-bottom:var(--space-3); }
+    .hero-card p { color:var(--color-text-muted); max-width:34ch; }
+    .hero-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-3); }
+    .stat { background:var(--color-surface); border:1px solid rgba(255,255,255,.07); border-radius:18px; padding:var(--space-4); }
+    .stat strong { display:block; font-size:var(--text-lg); }
+    .stat span { color:var(--color-text-muted); font-size:var(--text-xs); }
+    main { padding:0 var(--space-4) var(--space-8); }
+    .screen { display:none; gap:var(--space-4); }
+    .screen.active { display:grid; }
+    .section-title { display:flex; align-items:end; justify-content:space-between; gap:var(--space-4); padding-top:var(--space-3); }
+    .section-title h3 { font-size:var(--text-lg); line-height:1.1; }
+    .section-title p { color:var(--color-text-muted); font-size:var(--text-sm); }
+    .card { background:var(--color-surface); border:1px solid rgba(255,255,255,.08); border-radius:22px; padding:var(--space-4); box-shadow:var(--shadow-sm); }
+    .card h4 { font-size:1rem; margin-bottom:.45rem; }
+    .muted { color:var(--color-text-muted); }
+    .faint { color:var(--color-text-faint); }
+    .pill-row, .actions, .inline-fields { display:flex; gap:var(--space-2); flex-wrap:wrap; }
+    .pill, .chip-btn {
+      display:inline-flex; align-items:center; gap:.4rem; padding:.65rem .9rem; border-radius:var(--radius-full); font-size:var(--text-xs);
+      background:var(--color-surface-2); border:1px solid rgba(255,255,255,.08); color:var(--color-text-muted);
+    }
+    .pill.is-on { background:rgba(112,184,75,.12); color:#a7d990; border-color:rgba(112,184,75,.26); }
+    .pill.low { background:rgba(223,111,128,.12); color:#ffb7c1; border-color:rgba(223,111,128,.26); }
+    .btn { min-height:44px; padding:.8rem 1rem; border-radius:16px; font-size:var(--text-sm); font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:.55rem; }
+    .btn-primary { background:var(--color-primary); color:#120f08; }
+    .btn-secondary { background:var(--color-surface-2); border:1px solid rgba(255,255,255,.08); }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-3); }
+    .list { display:grid; gap:var(--space-3); }
+    .list-item { display:grid; gap:.55rem; padding:var(--space-4); border-radius:18px; background:var(--color-surface-2); border:1px solid rgba(255,255,255,.06); }
+    .list-head { display:flex; justify-content:space-between; gap:var(--space-3); align-items:start; }
+    .checklist-item { display:flex; gap:.75rem; align-items:start; }
+    .check { margin-top:.2rem; accent-color:var(--color-primary); width:18px; height:18px; }
+    .input, .select, .textarea {
+      width:100%; min-height:46px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:var(--color-surface-2); padding:.85rem .95rem;
+    }
+    .textarea { min-height:94px; resize:vertical; }
+    .field { display:grid; gap:.45rem; }
+    .field label { font-size:var(--text-xs); color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.08em; }
+    .recipe-card { display:grid; gap:var(--space-3); }
+    .recipe-meta { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2); }
+    .meta-box { padding:.85rem; border-radius:16px; background:var(--color-surface-2); border:1px solid rgba(255,255,255,.06); }
+    .meta-box span { display:block; font-size:var(--text-xs); color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.08em; }
+    .meta-box strong { display:block; margin-top:.25rem; }
+    .ingredients { display:grid; gap:.55rem; }
+    .ingredient { display:flex; justify-content:space-between; gap:1rem; font-size:var(--text-sm); padding-bottom:.45rem; border-bottom:1px dashed rgba(255,255,255,.08); }
+    .ingredient:last-child { border-bottom:none; padding-bottom:0; }
+    .calc-result { font:700 var(--text-xl)/1 var(--font-display); color:var(--color-primary); }
+    .provider-line { display:flex; justify-content:space-between; gap:var(--space-2); align-items:center; }
+    .provider-tag { padding:.35rem .65rem; border-radius:999px; background:var(--color-primary-highlight); color:var(--color-primary); font-size:var(--text-xs); }
+    .bottom-nav {
+      position:fixed; left:50%; transform:translateX(-50%); bottom:1rem; width:min(430px, calc(100vw - 1rem));
+      background:color-mix(in srgb, var(--color-surface) 88%, transparent); backdrop-filter: blur(18px); border:1px solid rgba(255,255,255,.08);
+      border-radius:22px; padding:.5rem; display:grid; grid-template-columns:repeat(5,1fr); gap:.35rem; z-index:50; box-shadow:var(--shadow-md);
+    }
+    .nav-btn { min-height:56px; border-radius:18px; display:grid; place-items:center; gap:.2rem; color:var(--color-text-muted); }
+    .nav-btn span { font-size:11px; }
+    .nav-btn.active { background:rgba(209,168,76,.14); color:var(--color-primary); }
+    .empty-state { text-align:center; padding:var(--space-6); color:var(--color-text-muted); }
+    .small { font-size:var(--text-sm); }
+    .footer-note { padding:var(--space-6) var(--space-4) var(--space-10); color:var(--color-text-faint); font-size:var(--text-xs); text-align:center; }
+    @media (min-width: 760px) {
+      .app-shell { max-width: 1180px; padding-bottom:2rem; }
+      .hero, main { padding-inline:var(--space-6); }
+      .desktop-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:var(--space-4); }
+      .hero-stats { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+      .bottom-nav { position:sticky; top:1rem; left:auto; transform:none; width:100%; max-width:none; margin:0 var(--space-6) var(--space-4); }
+      main { padding-bottom:var(--space-8); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="sr-only" href="#contenido">Saltar al contenido</a>
+      <div class="brand-row">
+        <div class="brand">
+          <div class="logo" aria-label="Logo Mise App">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 34h24"/>
+              <path d="M18 12h12l-2 10a6 6 0 1 1-8 0l-2-10Z"/>
+              <path d="M24 8v6"/>
+            </svg>
+          </div>
+          <div>
+            <h1>Mise App</h1>
+            <p>Operación, recetas y control de barra</p>
+          </div>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambiar tema">
+          <i data-lucide="moon-star"></i>
+        </button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow"><i data-lucide="shield-check" style="width:14px;height:14px"></i> Versión 1 — Demo operativa</div>
+        <h2>La barra clara, rápida y ordenada incluso en horario pico.</h2>
+        <p>Mise App reúne checklists, SOP, inventario, proveedores, pedidos, costos, ABV y un recetario profesional en una sola interfaz pensada para uso nocturno desde el celular.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong>27</strong><span>Cócteles base</span></div>
+        <div class="stat"><strong>8</strong><span>Módulos clave</span></div>
+        <div class="stat"><strong>Mobile</strong><span>Uso nocturno</span></div>
+      </div>
+    </section>
+
+    <main id="contenido">
+      <section class="screen active" id="screen-inicio">
+        <div class="desktop-grid">
+          <div class="list">
+            <div class="section-title">
+              <div><h3>Estado del turno</h3><p>Resumen rápido para encargados.</p></div>
+            </div>
+            <article class="card">
+              <div class="grid-2">
+                <div>
+                  <p class="faint small">Checklist apertura</p>
+                  <p><strong>8/10</strong> tareas listas</p>
+                </div>
+                <div>
+                  <p class="faint small">Stock crítico</p>
+                  <p><strong>3</strong> ítems bajos</p>
+                </div>
+                <div>
+                  <p class="faint small">Recetas guardadas</p>
+                  <p><strong>27</strong> clásicos y tendencia</p>
+                </div>
+                <div>
+                  <p class="faint small">Pedido sugerido</p>
+                  <p><strong>1</strong> proveedor listo</p>
+                </div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="section-title" style="padding-top:0">
+                <div><h3>Notas de turno</h3><p>Puente entre equipos.</p></div>
+              </div>
+              <textarea class="textarea" placeholder="Ej.: revisar cítricos, reponer albahaca, calibrar hielo, cambiar botella speed rail de gin..."></textarea>
+            </article>
+          </div>
+          <div class="list">
+            <article class="card">
+              <div class="section-title" style="padding-top:0">
+                <div><h3>Accesos rápidos</h3><p>Todo a un toque.</p></div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" data-jump="screen-operacion"><i data-lucide="clipboard-list"></i> Abrir checklist</button>
+                <button class="btn btn-secondary" data-jump="screen-recetas"><i data-lucide="martini"></i> Ver recetario</button>
+                <button class="btn btn-secondary" data-jump="screen-inventario"><i data-lucide="package-search"></i> Stock</button>
+                <button class="btn btn-secondary" data-jump="screen-costos"><i data-lucide="calculator"></i> Costear</button>
+              </div>
+            </article>
+            <article class="card">
+              <h4>Sugerencia de lanzamiento</h4>
+              <p class="muted">Empezá con recetas, inventario, costos y pedidos. Son los módulos que más valor percibe un bar desde la primera semana.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-operacion">
+        <div class="section-title"><div><h3>Operación</h3><p>Checklists y SOP editables.</p></div></div>
+        <article class="card">
+          <h4>Checklists sugeridos</h4>
+          <div class="pill-row" style="margin: .9rem 0 1rem;">
+            <button class="pill is-on">Apertura</button>
+            <button class="pill">Entremedio</button>
+            <button class="pill">Cierre</button>
+          </div>
+          <div class="list" id="checklist-list"></div>
+          <div class="field" style="margin-top:1rem;">
+            <label for="checklist-new">Agregar tarea</label>
+            <div class="inline-fields">
+              <input id="checklist-new" class="input" placeholder="Ej.: chequear garnish de cítricos" />
+              <button class="btn btn-primary" id="add-check">Agregar</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <h4>SOP base</h4>
+          <div class="list" id="sop-list"></div>
+          <div class="field" style="margin-top:1rem;">
+            <label for="sop-title">Crear SOP</label>
+            <input id="sop-title" class="input" placeholder="Ej.: protocolo de mise para barra de autor" />
+          </div>
+          <div class="field" style="margin-top:.8rem;">
+            <textarea id="sop-body" class="textarea" placeholder="Escribí el procedimiento paso a paso..."></textarea>
+          </div>
+          <button class="btn btn-primary" id="add-sop" style="margin-top:1rem;">Guardar SOP</button>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-inventario">
+        <div class="section-title"><div><h3>Inventario</h3><p>Stock, insumos y pedido sugerido.</p></div></div>
+        <article class="card">
+          <div class="pill-row" id="inventory-filters">
+            <button class="pill is-on" data-category="Todos">Todos</button>
+            <button class="pill" data-category="Destilados">Destilados</button>
+            <button class="pill" data-category="Cristalería">Cristalería</button>
+            <button class="pill" data-category="Insumos">Insumos</button>
+          </div>
+          <div class="list" id="inventory-list" style="margin-top:1rem"></div>
+          <div class="grid-2" style="margin-top:1rem;">
+            <div class="field"><label>Nuevo insumo</label><input id="new-item-name" class="input" placeholder="Ej.: Bitter Angostura" /></div>
+            <div class="field"><label>Categoría</label><select id="new-item-category" class="select"><option>Destilados</option><option>Cristalería</option><option>Insumos</option></select></div>
+            <div class="field"><label>Stock actual</label><input id="new-item-stock" class="input" type="number" placeholder="12" /></div>
+            <div class="field"><label>Stock mínimo</label><input id="new-item-min" class="input" type="number" placeholder="4" /></div>
+          </div>
+          <button class="btn btn-primary" id="add-item" style="margin-top:1rem;">Agregar insumo</button>
+        </article>
+        <article class="card">
+          <h4>Pedido sugerido</h4>
+          <p class="muted small">Se arma en base a los ítems debajo del stock mínimo.</p>
+          <div id="reorder-list" class="list" style="margin-top:1rem;"></div>
+          <div class="actions" style="margin-top:1rem;">
+            <button class="btn btn-primary" id="mail-order"><i data-lucide="mail"></i> Abrir pedido por mail</button>
+            <button class="btn btn-secondary" id="copy-order"><i data-lucide="copy"></i> Copiar texto</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-recetas">
+        <div class="section-title"><div><h3>Recetario + ABV</h3><p>Clásicos, tendencias y conversión de medidas.</p></div></div>
+        <article class="card">
+          <div class="inline-fields" style="align-items:center; margin-bottom:1rem;">
+            <input id="recipe-search" class="input" placeholder="Buscar cóctel..." />
+            <select id="unit-select" class="select" style="max-width:110px;">
+              <option value="ml">ml</option>
+              <option value="oz">oz</option>
+              <option value="cl">cl</option>
+              <option value="cc">cc</option>
+            </select>
+          </div>
+          <div id="recipe-list" class="list"></div>
+        </article>
+        <article class="card">
+          <h4>Calculador ABV del cóctel</h4>
+          <div class="grid-2" style="margin-top:1rem;">
+            <div class="field"><label>Alcohol total (ml)</label><input id="abv-alcohol-ml" class="input" type="number" value="60" /></div>
+            <div class="field"><label>Graduación promedio (%)</label><input id="abv-strength" class="input" type="number" value="40" /></div>
+            <div class="field" style="grid-column:1/-1;"><label>Volumen final del cóctel (ml)</label><input id="abv-total-ml" class="input" type="number" value="150" /></div>
+          </div>
+          <button class="btn btn-primary" id="abv-calc" style="margin-top:1rem;">Calcular ABV</button>
+          <p class="calc-result" id="abv-result" style="margin-top:1rem;">16.0%</p>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-costos">
+        <div class="section-title"><div><h3>Costos</h3><p>Costo por trago, costo porcentual y precio sugerido.</p></div></div>
+        <article class="card">
+          <div class="grid-2">
+            <div class="field"><label>Costo botella (CLP o moneda)</label><input id="bottle-cost" class="input" type="number" value="22000" /></div>
+            <div class="field"><label>Contenido botella (ml)</label><input id="bottle-ml" class="input" type="number" value="750" /></div>
+            <div class="field"><label>Cantidad usada en receta (ml)</label><input id="pour-ml" class="input" type="number" value="60" /></div>
+            <div class="field"><label>Otros costos receta</label><input id="other-cost" class="input" type="number" value="800" /></div>
+            <div class="field"><label>Precio de venta</label><input id="sale-price" class="input" type="number" value="6900" /></div>
+            <div class="field"><label>% objetivo de costo</label><input id="target-cost" class="input" type="number" value="22" /></div>
+          </div>
+          <div class="actions" style="margin-top:1rem;"><button class="btn btn-primary" id="cost-calc">Calcular</button></div>
+          <div class="grid-2" style="margin-top:1rem;">
+            <div class="card" style="padding:1rem;"><p class="faint small">Costo del cóctel</p><p class="calc-result" id="cocktail-cost">2,560</p></div>
+            <div class="card" style="padding:1rem;"><p class="faint small">Costo %</p><p class="calc-result" id="cost-percent">37.1%</p></div>
+            <div class="card" style="padding:1rem; grid-column:1/-1;"><p class="faint small">Precio sugerido</p><p class="calc-result" id="suggested-price">11,636</p></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-proveedores">
+        <div class="section-title"><div><h3>Proveedores</h3><p>Directorio editable para cada bar.</p></div></div>
+        <article class="card">
+          <div id="provider-list" class="list"></div>
+          <div class="grid-2" style="margin-top:1rem;">
+            <div class="field"><label>Nombre</label><input id="provider-name" class="input" placeholder="Proveedor o distribuidor" /></div>
+            <div class="field"><label>Rubro</label><select id="provider-type" class="select"><option>Licores</option><option>Cristalería</option><option>Insumos</option><option>Frutas</option></select></div>
+            <div class="field"><label>Mail o teléfono</label><input id="provider-contact" class="input" placeholder="Sin datos aún" /></div>
+            <div class="field"><label>Condiciones de pago</label><input id="provider-payment" class="input" placeholder="Contado / 30 días / transferencia" /></div>
+            <div class="field" style="grid-column:1/-1;"><label>Notas</label><textarea id="provider-notes" class="textarea" placeholder="Ej.: entrega lunes y jueves, responde mejor por WhatsApp..."></textarea></div>
+          </div>
+          <button class="btn btn-primary" id="add-provider" style="margin-top:1rem;">Agregar proveedor</button>
+        </article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-btn active" data-screen="screen-inicio"><i data-lucide="home"></i><span>Inicio</span></button>
+      <button class="nav-btn" data-screen="screen-operacion"><i data-lucide="clipboard-check"></i><span>Operación</span></button>
+      <button class="nav-btn" data-screen="screen-inventario"><i data-lucide="boxes"></i><span>Stock</span></button>
+      <button class="nav-btn" data-screen="screen-recetas"><i data-lucide="martini"></i><span>Recetas</span></button>
+      <button class="nav-btn" data-screen="screen-costos"><i data-lucide="badge-dollar-sign"></i><span>Costos</span></button>
+    </nav>
+
+    <footer class="footer-note">
+      Demo inicial de Mise App para validación de producto. El módulo de proveedores está preparado para que cada bar agregue sus propios contactos. En una fase 2, login, persistencia y suscripciones pueden conectarse con Supabase y Stripe.
+    </footer>
+  </div>
+
+  <script>
+    const recipes = [
+      {name:'Pisco Sour', glass:'Old Fashioned', garnish:'Angostura bitters', method:'Shake', tags:['clásico','sudamérica'], ingredients:[['Pisco',60],['Jugo de limón',30],['Jarabe simple',20],['Clara',20]]},
+      {name:'Gimlet', glass:'Coupe', garnish:'Twist de limón', method:'Shake', tags:['clásico'], ingredients:[['Gin',60],['Jugo de lima',22.5],['Jarabe simple',22.5]]},
+      {name:'Daiquiri', glass:'Coupe', garnish:'Sin garnish o rueda de lima', method:'Shake', tags:['IBA'], ingredients:[['Ron blanco',60],['Jugo de lima',25],['Jarabe simple',15]]},
+      {name:'Gin Tonic', glass:'Copa balón', garnish:'Lima o botánicos', method:'Build', tags:['highball'], ingredients:[['Gin',50],['Agua tónica',150]]},
+      {name:'Mojito', glass:'Highball', garnish:'Menta y lima', method:'Build', tags:['IBA'], ingredients:[['Ron blanco',50],['Jugo de lima',25],['Jarabe simple',20],['Soda',60],['Menta',10]]},
+      {name:'Aperol Spritz', glass:'Copa de vino', garnish:'Rodaja de naranja', method:'Build', tags:['aperitivo'], ingredients:[['Aperol',90],['Espumante',60],['Soda',30]]},
+      {name:'Negroni', glass:'Old Fashioned', garnish:'Twist de naranja', method:'Stir', tags:['top seller'], ingredients:[['Gin',30],['Campari',30],['Vermouth rosso',30]]},
+      {name:'Sangría', glass:'Copa de vino', garnish:'Fruta fresca', method:'Build', tags:['batch'], ingredients:[['Vino tinto',120],['Brandy',20],['Licor de naranja',15],['Jugo de naranja',30],['Soda',30]]},
+      {name:'Manhattan', glass:'Coupe', garnish:'Cereza', method:'Stir', tags:['top seller'], ingredients:[['Whisky rye o bourbon',60],['Vermouth rosso',30],['Angostura',2]]},
+      {name:'Old Fashioned', glass:'Old Fashioned', garnish:'Piel de naranja', method:'Stir', tags:['top seller'], ingredients:[['Bourbon',60],['Jarabe simple',10],['Angostura',2]]},
+      {name:'Dry Martini', glass:'Martini', garnish:'Aceituna o twist', method:'Stir', tags:['top seller'], ingredients:[['Gin',60],['Vermouth dry',10]]},
+      {name:'Bramble', glass:'Old Fashioned', garnish:'Mora y limón', method:'Build', tags:['moderno'], ingredients:[['Gin',50],['Jugo de limón',25],['Jarabe simple',12.5],['Crème de mûre',15]]},
+      {name:'Cosmopolitan', glass:'Martini', garnish:'Twist de naranja', method:'Shake', tags:['top seller'], ingredients:[['Vodka cítrico',40],['Cointreau',15],['Jugo de lima',15],['Cranberry',30]]},
+      {name:'Espresso Martini', glass:'Coupe', garnish:'3 granos de café', method:'Shake', tags:['top seller'], ingredients:[['Vodka',40],['Licor de café',20],['Espresso',30],['Jarabe simple',10]]},
+      {name:'Piña Colada', glass:'Hurricane', garnish:'Piña y cereza', method:'Blend', tags:['tropical'], ingredients:[['Ron blanco',50],['Crema de coco',30],['Jugo de piña',90]]},
+      {name:'Caipiriña', glass:'Old Fashioned', garnish:'Gajos de lima', method:'Build', tags:['IBA'], ingredients:[['Cachaça',60],['Lima',30],['Azúcar',10]]},
+      {name:'Margarita', glass:'Coupe', garnish:'Sal en borde y lima', method:'Shake', tags:['top seller'], ingredients:[['Tequila',50],['Triple sec',20],['Jugo de lima',25]]},
+      {name:'Paloma', glass:'Highball', garnish:'Pomelo o lima', method:'Build', tags:['highball'], ingredients:[['Tequila',50],['Jugo de lima',15],['Soda pomelo',120]]},
+      {name:'Moscow Mule', glass:'Mug', garnish:'Menta y lima', method:'Build', tags:['highball'], ingredients:[['Vodka',50],['Jugo de lima',15],['Ginger beer',120]]},
+      {name:'Bee’s Knees', glass:'Coupe', garnish:'Twist de limón', method:'Shake', tags:['clásico'], ingredients:[['Gin',60],['Jugo de limón',22.5],['Miel diluida',22.5]]},
+      {name:'Penicillin', glass:'Old Fashioned', garnish:'Jengibre', method:'Shake', tags:['moderno'], ingredients:[['Blended Scotch',50],['Jugo de limón',22.5],['Jarabe miel-jengibre',22.5],['Islay float',7.5]]},
+      {name:'French 75', glass:'Flauta', garnish:'Twist de limón', method:'Build', tags:['champagne'], ingredients:[['Gin',30],['Jugo de limón',15],['Jarabe simple',15],['Espumante',60]]},
+      {name:'Gin Basil Smash', glass:'Old Fashioned', garnish:'Albahaca', method:'Shake', tags:['moderno'], ingredients:[['Gin',60],['Jugo de limón',25],['Jarabe simple',20],['Albahaca',12]]},
+      {name:'Tom Collins', glass:'Collins', garnish:'Rodaja de limón', method:'Build', tags:['clásico'], ingredients:[['Gin',45],['Jugo de limón',30],['Jarabe simple',15],['Soda',60]]},
+      {name:'Whisky Sour', glass:'Old Fashioned', garnish:'Angostura', method:'Shake', tags:['top seller'], ingredients:[['Bourbon',60],['Jugo de limón',30],['Jarabe simple',20],['Clara',20]]},
+      {name:'Hugo Spritz', glass:'Copa de vino', garnish:'Menta y lima', method:'Build', tags:['aperitivo'], ingredients:[['Licor flor de saúco',45],['Espumante',90],['Soda',30]]},
+      {name:'Tropical Gin', glass:'Highball', garnish:'Rodaja de pomelo o mango', method:'Build', tags:['venta alta'], ingredients:[['Gin',50],['Jugo tropical',90],['Tónica',90]]}
+    ];
+
+    const checklistItems = [
+      'Encender estación y revisar iluminación de barra',
+      'Reponer hielo de servicio y backup',
+      'Controlar mise de cítricos, menta y albahaca',
+      'Verificar speed rack completo',
+      'Pulir cristalería crítica',
+      'Chequear POS, comandera y efectivo de caja',
+      'Preparar garnish de apertura',
+      'Probar tónicas, sodas y ginger beer abiertas',
+      'Revisar stock de jarabes y pre-batches',
+      'Limpiar superficies y barra de apoyo'
+    ];
+
+    const sopItems = [
+      { title:'Apertura de barra', body:'Revisar iluminación, equipos, hielo, speed rack, garnish, cristalería y estación limpia antes de abrir al público.' },
+      { title:'Cierre de barra', body:'Contar stock crítico, limpiar cristalería, cerrar botellas, sanitizar herramientas, sacar residuos y dejar nota de turno.' },
+      { title:'Reposición en pico de servicio', body:'Usar checklist rápida: hielo, garnish, mixers, cristalería, residuos y speed rail. Priorizar continuidad antes que detalle.' }
+    ];
+
+    const inventory = [
+      {name:'Gin London Dry', category:'Destilados', stock:3, min:4, unit:'botellas'},
+      {name:'Pisco transparente', category:'Destilados', stock:8, min:4, unit:'botellas'},
+      {name:'Vodka premium', category:'Destilados', stock:5, min:4, unit:'botellas'},
+      {name:'Campari', category:'Destilados', stock:2, min:3, unit:'botellas'},
+      {name:'Copas coupé', category:'Cristalería', stock:18, min:20, unit:'unidades'},
+      {name:'Highball', category:'Cristalería', stock:32, min:24, unit:'unidades'},
+      {name:'Limas', category:'Insumos', stock:20, min:24, unit:'unidades'},
+      {name:'Menta', category:'Insumos', stock:4, min:6, unit:'atados'}
+    ];
+
+    const providers = [
+      {name:'Proveedor pendiente 1', type:'Licores', contact:'', payment:'', notes:'Espacio listo para que el bar cargue su contacto habitual.'},
+      {name:'Proveedor pendiente 2', type:'Cristalería', contact:'', payment:'', notes:'Ideal para monetizar luego con proveedores destacados.'}
+    ];
+
+    const screens = [...document.querySelectorAll('.screen')];
+    const navBtns = [...document.querySelectorAll('.nav-btn')];
+    function showScreen(id){
+      screens.forEach(s => s.classList.toggle('active', s.id === id));
+      navBtns.forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    navBtns.forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.screen)));
+    document.querySelectorAll('[data-jump]').forEach(btn => btn.addEventListener('click', ()=> showScreen(btn.dataset.jump)));
+
+    const themeBtn = document.querySelector('[data-theme-toggle]');
+    let theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    function updateThemeIcon() {
+      themeBtn.innerHTML = theme === 'dark' ? '<i data-lucide="sun-medium"></i>' : '<i data-lucide="moon-star"></i>';
+      themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+      if (window.lucide) lucide.createIcons();
+    }
+    themeBtn.addEventListener('click', () => { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', theme); updateThemeIcon(); });
+
+    function renderChecklist() {
+      const wrap = document.getElementById('checklist-list');
+      wrap.innerHTML = checklistItems.map((item, i) => `
+        <label class="checklist-item list-item">
+          <input class="check" type="checkbox" ${i < 8 ? 'checked' : ''} />
+          <span>${item}</span>
+        </label>`).join('');
+    }
+    document.getElementById('add-check').addEventListener('click', () => {
+      const input = document.getElementById('checklist-new');
+      if (!input.value.trim()) return;
+      checklistItems.push(input.value.trim());
+      input.value = '';
+      renderChecklist();
+    });
+
+    function renderSops() {
+      const wrap = document.getElementById('sop-list');
+      wrap.innerHTML = sopItems.map(s => `
+        <article class="list-item">
+          <div class="list-head"><h4>${s.title}</h4></div>
+          <p class="muted small">${s.body}</p>
+        </article>`).join('');
+    }
+    document.getElementById('add-sop').addEventListener('click', () => {
+      const title = document.getElementById('sop-title');
+      const body = document.getElementById('sop-body');
+      if (!title.value.trim() || !body.value.trim()) return;
+      sopItems.unshift({title:title.value.trim(), body:body.value.trim()});
+      title.value=''; body.value=''; renderSops();
+    });
+
+    let currentCategory = 'Todos';
+    function renderInventory() {
+      const list = document.getElementById('inventory-list');
+      const filtered = currentCategory === 'Todos' ? inventory : inventory.filter(item => item.category === currentCategory);
+      list.innerHTML = filtered.map((item, idx) => {
+        const low = item.stock <= item.min;
+        return `
+          <article class="list-item">
+            <div class="list-head">
+              <div>
+                <h4>${item.name}</h4>
+                <p class="muted small">${item.category}</p>
+              </div>
+              <span class="pill ${low ? 'low' : 'is-on'}">${low ? 'Bajo' : 'OK'}</span>
+            </div>
+            <div class="provider-line">
+              <span>Stock: <strong>${item.stock}</strong> ${item.unit}</span>
+              <span class="faint small">Mínimo: ${item.min}</span>
+            </div>
+          </article>`;
+      }).join('');
+      renderReorder();
+    }
+    document.querySelectorAll('#inventory-filters [data-category]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentCategory = btn.dataset.category;
+        document.querySelectorAll('#inventory-filters .pill').forEach(b => b.classList.remove('is-on'));
+        btn.classList.add('is-on');
+        renderInventory();
+      });
+    });
+    document.getElementById('add-item').addEventListener('click', () => {
+      const name = document.getElementById('new-item-name').value.trim();
+      const category = document.getElementById('new-item-category').value;
+      const stock = Number(document.getElementById('new-item-stock').value || 0);
+      const min = Number(document.getElementById('new-item-min').value || 0);
+      if (!name) return;
+      inventory.unshift({name, category, stock, min, unit: category === 'Cristalería' ? 'unidades' : 'botellas'});
+      ['new-item-name','new-item-stock','new-item-min'].forEach(id => document.getElementById(id).value='');
+      renderInventory();
+    });
+    function orderText() {
+      const lows = inventory.filter(i => i.stock <= i.min);
+      return lows.length ? 'Hola, necesito reponer los siguientes productos para barra:%0D%0A%0D%0A' + lows.map(i => `- ${i.name}: stock actual ${i.stock} ${i.unit}, sugerido reponer`).join('%0D%0A') : 'Sin faltantes críticos por ahora.';
+    }
+    function renderReorder() {
+      const lows = inventory.filter(i => i.stock <= i.min);
+      document.getElementById('reorder-list').innerHTML = lows.length ? lows.map(i => `<div class="list-item"><strong>${i.name}</strong><span class="muted small">Stock ${i.stock} / mínimo ${i.min}</span></div>`).join('') : '<div class="empty-state">No hay faltantes críticos en este momento.</div>';
+    }
+    document.getElementById('mail-order').addEventListener('click', () => {
+      window.location.href = `mailto:?subject=Pedido%20de%20barra&body=${orderText()}`;
+    });
+    document.getElementById('copy-order').addEventListener('click', async () => {
+      const text = decodeURIComponent(orderText().replace(/%0D%0A/g,'\n'));
+      try { await navigator.clipboard.writeText(text); alert('Pedido copiado.'); } catch(e) { alert('No se pudo copiar.'); }
+    });
+
+    function formatAmount(ml, unit) {
+      if (unit === 'ml' || unit === 'cc') return `${Number(ml % 1 === 0 ? ml : ml.toFixed(1))} ${unit}`;
+      if (unit === 'cl') return `${(ml / 10).toFixed(1)} cl`;
+      if (unit === 'oz') return `${(ml / 29.57).toFixed(2)} oz`;
+      return `${ml} ml`;
+    }
+    function renderRecipes() {
+      const q = document.getElementById('recipe-search').value.toLowerCase().trim();
+      const unit = document.getElementById('unit-select').value;
+      const visible = recipes.filter(r => r.name.toLowerCase().includes(q));
+      document.getElementById('recipe-list').innerHTML = visible.map(r => `
+        <article class="card recipe-card">
+          <div class="list-head">
+            <div>
+              <h4>${r.name}</h4>
+              <div class="pill-row" style="margin-top:.45rem">${r.tags.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+            </div>
+          </div>
+          <div class="recipe-meta">
+            <div class="meta-box"><span>Cristalería</span><strong>${r.glass}</strong></div>
+            <div class="meta-box"><span>Garnish</span><strong>${r.garnish}</strong></div>
+            <div class="meta-box" style="grid-column:1/-1"><span>Método</span><strong>${r.method}</strong></div>
+          </div>
+          <div>
+            <p class="faint small" style="margin-bottom:.7rem">Ingredientes</p>
+            <div class="ingredients">${r.ingredients.map(([name, ml]) => `<div class="ingredient"><span>${name}</span><strong>${formatAmount(ml, unit)}</strong></div>`).join('')}</div>
+          </div>
+        </article>`).join('');
+    }
+    document.getElementById('recipe-search').addEventListener('input', renderRecipes);
+    document.getElementById('unit-select').addEventListener('change', renderRecipes);
+    document.getElementById('abv-calc').addEventListener('click', () => {
+      const alcoholMl = Number(document.getElementById('abv-alcohol-ml').value || 0);
+      const strength = Number(document.getElementById('abv-strength').value || 0) / 100;
+      const totalMl = Number(document.getElementById('abv-total-ml').value || 1);
+      const pureAlcohol = alcoholMl * strength;
+      const abv = (pureAlcohol / totalMl) * 100;
+      document.getElementById('abv-result').textContent = `${abv.toFixed(1)}%`;
+    });
+
+    function currency(n){ return new Intl.NumberFormat('es-CL').format(Math.round(n)); }
+    function calcCost(){
+      const bottleCost = Number(document.getElementById('bottle-cost').value || 0);
+      const bottleMl = Number(document.getElementById('bottle-ml').value || 1);
+      const pourMl = Number(document.getElementById('pour-ml').value || 0);
+      const other = Number(document.getElementById('other-cost').value || 0);
+      const sale = Number(document.getElementById('sale-price').value || 1);
+      const target = Number(document.getElementById('target-cost').value || 1) / 100;
+      const liquidCost = (bottleCost / bottleMl) * pourMl;
+      const total = liquidCost + other;
+      const percent = (total / sale) * 100;
+      const suggested = total / target;
+      document.getElementById('cocktail-cost').textContent = currency(total);
+      document.getElementById('cost-percent').textContent = `${percent.toFixed(1)}%`;
+      document.getElementById('suggested-price').textContent = currency(suggested);
+    }
+    document.getElementById('cost-calc').addEventListener('click', calcCost);
+
+    function renderProviders() {
+      const list = document.getElementById('provider-list');
+      list.innerHTML = providers.map(p => `
+        <article class="list-item">
+          <div class="provider-line"><h4>${p.name}</h4><span class="provider-tag">${p.type}</span></div>
+          <p class="small muted">${p.contact || 'Sin contacto cargado aún'}</p>
+          <p class="small muted">${p.payment || 'Condiciones de pago sin definir'}</p>
+          <p class="small">${p.notes || ''}</p>
+        </article>`).join('');
+    }
+    document.getElementById('add-provider').addEventListener('click', () => {
+      const name = document.getElementById('provider-name').value.trim();
+      if (!name) return;
+      providers.unshift({
+        name,
+        type: document.getElementById('provider-type').value,
+        contact: document.getElementById('provider-contact').value.trim(),
+        payment: document.getElementById('provider-payment').value.trim(),
+        notes: document.getElementById('provider-notes').value.trim()
+      });
+      ['provider-name','provider-contact','provider-payment','provider-notes'].forEach(id => document.getElementById(id).value='');
+      renderProviders();
+    });
+
+    renderChecklist();
+    renderSops();
+    renderInventory();
+    renderRecipes();
+    renderProviders();
+    calcCost();
+    updateThemeIcon();
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>
